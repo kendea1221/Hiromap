@@ -550,37 +550,37 @@ function App() {
 
   return (
     <div className="min-h-screen w-full bg-neutral-100 text-neutral-800">
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center gap-2 px-4 py-3 bg-white border-b border-neutral-200 shadow-sm">
-        <Sparkles className="text-amber-500" />
-        <h1 className="font-semibold">Hiromap</h1>
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center gap-1 md:gap-2 px-2 md:px-4 py-3 bg-white border-b border-neutral-200 shadow-sm overflow-x-auto">
+        <Sparkles className="text-amber-500 flex-shrink-0" />
+        <h1 className="font-semibold text-sm md:text-base">Hiromap</h1>
         {username && (
-          <span className="text-sm text-neutral-600 ml-2">ようこそ、{username}さん</span>
+          <span className="text-xs md:text-sm text-neutral-600 ml-2 hidden sm:inline">ようこそ、{username}さん</span>
         )}
-        <div className="ml-2 flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded">
+        <div className="hidden md:flex ml-2 items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded">
           <span>{getWeatherIcon()}</span>
           <span>{weather.temp}°C</span>
           <span className="text-neutral-500">{weather.humidity}%</span>
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1">
           {username && (
             <>
               <button
                 onClick={() => setShowRouteBuilder(!showRouteBuilder)}
-                className="rounded-md border border-neutral-300 p-2 hover:bg-neutral-100"
+                className="rounded-md border border-neutral-300 p-2 hover:bg-neutral-100 hidden sm:inline-flex"
                 title="ルート作成"
               >
                 <Route size={18} />
               </button>
               <button
                 onClick={getCurrentLocation}
-                className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
+                className="hidden sm:inline-flex items-center gap-1 rounded-md px-2 md:px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
                 title="現在地を表示"
               >
                 <Navigation size={16} />
               </button>
               <button
                 onClick={() => setShowSearch(v => !v)}
-                className={`inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm ${
+                className={`inline-flex items-center gap-1 rounded-md px-2 md:px-3 py-1.5 text-sm ${
                   showSearch ? 'bg-blue-500 text-white' : 'border border-neutral-300 hover:bg-neutral-100'
                 }`}
                 title="検索・フィルター"
@@ -589,16 +589,16 @@ function App() {
               </button>
               <button
                 onClick={() => setAddMode(v => !v)}
-                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm ${
+                className={`inline-flex items-center gap-1 rounded-md px-2 md:px-3 py-1.5 text-sm ${
                   addMode ? 'bg-amber-500 text-white' : 'border border-neutral-300 hover:bg-neutral-100'
                 }`}
                 title="マップをクリックして新規スポット追加"
               >
-                <MapPinIcon size={16} /> {addMode ? '追加モード中' : '場所を追加'}
+                <MapPinIcon size={16} /> <span className="hidden md:inline">{addMode ? '追加中' : '追加'}</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="rounded-md px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
+                className="hidden md:inline-flex rounded-md px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
               >
                 ログアウト
               </button>
@@ -606,17 +606,17 @@ function App() {
           )}
           <button
             onClick={() => setShowChat(v => !v)}
-            className="rounded-md px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
+            className="rounded-md px-2 md:px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100 flex-shrink-0"
             title="チャットパネルの表示切り替え"
           >
-            {showChat ? '💬 ✕' : '💬'}
+            {showChat ? '💬✕' : '💬'}
           </button>
         </div>
       </header>
 
       <main className="relative pt-14 h-[calc(100vh-56px)]">
         {showSearch && (
-          <div className="absolute top-4 left-4 z-30 bg-white rounded-xl shadow-lg border border-neutral-200 p-4 w-80 space-y-3">
+          <div className="absolute top-4 left-4 right-4 md:right-auto z-30 bg-white rounded-xl shadow-lg border border-neutral-200 p-4 w-full md:w-80 space-y-3 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm">検索・フィルター</h3>
               <button onClick={() => setShowSearch(false)} className="p-1 hover:bg-neutral-100 rounded">
@@ -936,7 +936,7 @@ function App() {
         </section>
 
         {showRouteBuilder && (
-          <div className="absolute top-20 left-4 z-30 bg-white rounded-xl shadow-lg border p-4 w-80">
+          <div className="absolute top-20 left-4 right-4 md:right-auto z-30 bg-white rounded-xl shadow-lg border p-4 w-full md:w-80 max-h-[60vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-sm flex items-center gap-2">
                 <Route size={16} />
