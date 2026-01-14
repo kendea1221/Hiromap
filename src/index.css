@@ -1,0 +1,59 @@
+@import "leaflet/dist/leaflet.css";
+@import "tailwindcss";
+
+/* ピンからの吹き出しスタイル */
+.leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border: 2px solid #e5e5e5;
+  background: white;
+  animation: popupBounce 0.3s ease-out;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  padding: 12px;
+  min-width: 200px;
+}
+
+.leaflet-popup-tip-container {
+  width: 30px;
+  height: 20px;
+  margin-left: -15px;
+}
+
+.leaflet-popup-tip {
+  width: 20px;
+  height: 20px;
+  margin: -10px auto 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e5e5;
+  border-top: none;
+  border-right: none;
+}
+
+.leaflet-popup a.leaflet-popup-close-button {
+  color: #666;
+  font-size: 20px;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.leaflet-popup a.leaflet-popup-close-button:hover {
+  color: #000;
+}
+
+@keyframes popupBounce {
+  0% {
+    transform: scale(0.8) translateY(10px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
