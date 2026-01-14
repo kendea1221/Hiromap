@@ -566,21 +566,21 @@ function App() {
             <>
               <button
                 onClick={() => setShowRouteBuilder(!showRouteBuilder)}
-                className="rounded-md border border-neutral-300 p-2 hover:bg-neutral-100 hidden sm:inline-flex"
+                className="rounded-md border border-neutral-300 p-1.5 md:p-2 hover:bg-neutral-100"
                 title="ルート作成"
               >
-                <Route size={18} />
+                <Route size={16} className="md:w-[18px] md:h-[18px]" />
               </button>
               <button
                 onClick={getCurrentLocation}
-                className="hidden sm:inline-flex items-center gap-1 rounded-md px-2 md:px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
+                className="inline-flex items-center rounded-md p-1.5 md:px-3 md:py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
                 title="現在地を表示"
               >
                 <Navigation size={16} />
               </button>
               <button
                 onClick={() => setShowSearch(v => !v)}
-                className={`inline-flex items-center gap-1 rounded-md px-2 md:px-3 py-1.5 text-sm ${
+                className={`inline-flex items-center rounded-md p-1.5 md:px-3 md:py-1.5 text-sm ${
                   showSearch ? 'bg-blue-500 text-white' : 'border border-neutral-300 hover:bg-neutral-100'
                 }`}
                 title="検索・フィルター"
@@ -589,7 +589,7 @@ function App() {
               </button>
               <button
                 onClick={() => setAddMode(v => !v)}
-                className={`inline-flex items-center gap-1 rounded-md px-2 md:px-3 py-1.5 text-sm ${
+                className={`inline-flex items-center gap-1 rounded-md p-1.5 md:px-3 md:py-1.5 text-sm ${
                   addMode ? 'bg-amber-500 text-white' : 'border border-neutral-300 hover:bg-neutral-100'
                 }`}
                 title="マップをクリックして新規スポット追加"
@@ -598,9 +598,11 @@ function App() {
               </button>
               <button
                 onClick={handleLogout}
-                className="hidden md:inline-flex rounded-md px-3 py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
+                className="rounded-md p-1.5 md:px-3 md:py-1.5 text-sm border border-neutral-300 hover:bg-neutral-100"
+                title="ログアウト"
               >
-                ログアウト
+                <span className="hidden md:inline">ログアウト</span>
+                <span className="md:hidden text-xs">🚪</span>
               </button>
             </>
           )}
