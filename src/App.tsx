@@ -871,15 +871,54 @@ function App() {
 
   const env = weather;
 
+  // 不快指数（DI）の計算: DI = 0.81T + 0.01H(0.99T - 14.3) + 46.3
+  const calculateDiscomfortIndex = (temp: number, humidity: number): number => {
+    return 0.81 * temp + 0.01 * humidity * (0.99 * temp - 14.3) + 46.3;
+  };
+
+  // 情報鮮度を考慮: 直近1時間以内にコメントがあるスポットを優先
+  const hasRecentActivity = (spot: Spot): boolean => {
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    return (spot.comments || []).some(c => c.createdAt > oneHourAgo);
+  };
+
+  // 不快指数と滞在時間を考慮したスポット推薦
   const proposalsFor = (hours: number) => {
-    if (env.temp >= 27 && hours <= 2) {
-      return spots.filter((s) => s.kind === "indoor").slice(0, 2);
-    }
-    if (hours >= 3) {
-      const mSpot = spots.find((s) => s.id === "miyajima");
-      return mSpot ? [mSpot] : [];
-    }
-    return spots.slice(0, 2);
+    const DI = calculateDiscomfortIndex(env.temp, env.humidity);
+    const userStayMinutes = hours * 60;
+
+    // DI≧75なら屋内、DI<75なら屋外を優先
+    let filteredSpots = DI >= 75 
+      ? spots.filter((s) => s.kind === "indoor")
+      : spots.filter((s) => s.kind === "outdoor");
+
+    // 滞在時間の考慮: スポットの推定滞在時間(S)がユーザーの滞在時間(M)以下のものを抽出
+    // 各スポットの推定滞在時間を簡易的に設定（実際はデータベースから取得）
+    const estimatedStayTime: Record<string, number> = {
+      'dome': 90, 'castle': 60, 'miyajima': 180, 'gallery': 45,
+      'okonomiyaki1': 60, 'park1': 30, 'shopping1': 90, 'ramen1': 45,
+      'cafe1': 60, 'arcade1': 120, 'river1': 45, 'shrine1': 30,
+      'food1': 60, 'clothing1': 90, 'museum1': 75, 'okonomiyaki2': 60,
+      'park2': 45, 'fish1': 60, 'museum2': 90, 'bookstore1': 60,
+      'garden1': 60, 'tower1': 75, 'mitaki': 90, 'yakiniku1': 90,
+      'flower1': 60, 'sushi1': 75, 'boutique1': 45
+    };
+
+    filteredSpots = filteredSpots.filter(s => {
+      const stayTime = estimatedStayTime[s.id] || 60;
+      return stayTime <= userStayMinutes;
+    });
+
+    // 情報鮮度でソート（直近1時間以内にコメントがあるスポットを優先）
+    filteredSpots.sort((a, b) => {
+      const aRecent = hasRecentActivity(a);
+      const bRecent = hasRecentActivity(b);
+      if (aRecent && !bRecent) return -1;
+      if (!aRecent && bRecent) return 1;
+      return b.createdAt - a.createdAt;
+    });
+
+    return filteredSpots.slice(0, 3);
   };
 
   const handleSend = () => {
@@ -895,11 +934,18 @@ function App() {
     const m = trimmed.match(/\d+/);
     const hours = m ? Math.max(1, Math.min(8, parseInt(m[0], 10))) : 2;
 
-    const info = `現在の環境は ${env.temp}°C / 湿度 ${env.humidity}% です。${hours}時間で楽しめるおすすめはこちらです。`;
-    const spotsProp = proposalsFor(hours);
-    const suggestion = spotsProp.map((s) => `・${s.name}`).join("\n");
+    // 不快指数を計算
+    const DI = calculateDiscomfortIndex(env.temp, env.humidity);
+    const comfort = DI >= 75 ? "蒸し暑く不快" : DI >= 70 ? "やや暑い" : "快適";
 
-    const aiText = `${info}\n\n${env.temp >= 27 ? "現在は少し蒸し暑いため、涼しい室内で歴史を感じられるスポットを中心に。" : ""}\n${suggestion}`;
+    const info = `現在の環境は ${env.temp}°C / 湿度 ${env.humidity}% (不快指数: ${DI.toFixed(1)} - ${comfort}) です。${hours}時間で楽しめるおすすめはこちらです。`;
+    const spotsProp = proposalsFor(hours);
+    const suggestion = spotsProp.map((s) => {
+      const recent = hasRecentActivity(s) ? "🔥人気" : "";
+      return `・${s.name} ${recent}`;
+    }).join("\n");
+
+    const aiText = `${info}\n\n${DI >= 75 ? "不快指数が高いため、涼しい屋内スポットを中心にご案内します。" : "快適な気温なので、屋外スポットもお楽しみいただけます。"}\n${suggestion}`;
     setMessages((prev) => [
       ...prev,
       {
